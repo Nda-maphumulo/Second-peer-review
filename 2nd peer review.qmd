@@ -66,31 +66,26 @@ Serial processing was faster than parallel computing. That may be because bootst
 
 ```{r}
 set.seed(1)
-n<-50
-u<- rexp(n,rate=1)
-mean.1 <- mean(u)
-mean.1
+N<-1000
+true_mean<-1
+means_b<-numeric(N)
 
-B<-1000
-c1 <- c()
-c2 <- c()
+cl<-makeCluster(3)
+registerDoParallel(cl)
 
-bstr <- matrix(0,nrow=1000,ncol=n)
-for (i in 1:B) {
-  samp<-sample(u,size=n,replace=TRUE)
-  bstr[i,]<-samp
-c1[i]<-quantile(bstr[i,],probs=0.025)
-c2[i]<-quantile(bstr[i,],probs=0.975)
+count<-foreach(i = 1 :N, .combine = "+")%dopar%{
+  data<-rexp(50,rate=1)
+  means_b<-replicate(N,mean(sample(data,replace=TRUE)))
+  QI<-quantile(means_b,c(0.025,0.975))
+  if (QI[1]<=true_mean && QI[2]>=true_mean){
+  return(1) 
+ }else{
+  return(0)
+ }
+
 }
 
-count <- 0
-for (i in 1:B) {
-  if (c1[i]<= mean.1 & mean.1 <= c2[i]) {
-     count = count + 1
-  }
-}
-
-coverage <- count/B
+coverage <- count/N
 coverage
 ```
 
