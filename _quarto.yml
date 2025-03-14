@@ -1,0 +1,16 @@
+project:
+ title: "First peer-review prac handin"
+ type: book
+ output-dir: _book
+ 
+book:
+  chapters:
+  - index.qmd
+  - 2nd peer review.qmd
+  
+format:
+  html:
+   toc: true
+   toc-depth: 2
+   toc-location: left
+   theme: cosmo
